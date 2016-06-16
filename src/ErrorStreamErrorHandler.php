@@ -11,10 +11,10 @@ use ErrorStream\ErrorStreamClient\ErrorStreamReport;
 
 class ErrorStreamErrorHandler extends \yii\web\ErrorHandler
 {
-    
+
     public $clientId = 'errorstream';
-    
-    
+
+
     public function init()
     {
         Yii::$app->on(Application::EVENT_BEFORE_REQUEST, [$this, 'onShutdown']);
@@ -24,6 +24,9 @@ class ErrorStreamErrorHandler extends \yii\web\ErrorHandler
     {
         $error = error_get_last();
         if ($error !== null) {
+
+            //Stop if we're not active.
+            if($this->getClient()->active !== true) return;
 
             $errors = array(
                 E_ERROR,
@@ -36,15 +39,15 @@ class ErrorStreamErrorHandler extends \yii\web\ErrorHandler
             );
 
             if (in_array($error['type'], $errors)) {
-                $this->getClient()->captureException($this->createErrorException($error['message'], $error['type'], $error['file'], $error['line']));
+                $this->getClient()->reportException($this->createErrorException($error['message'], $error['type'], $error['file'], $error['line']));
             }
         }
     }
 
     public function handleError($code, $message, $file, $line)
     {
-        if (error_reporting() & $code) {
-            $this->getClient()->captureException($this->createErrorException($message, $code, $file, $line));
+        if (error_reporting() & $code && $this->getClient()->active == true) {
+            $this->getClient()->reportException($this->createErrorException($message, $code, $file, $line));
         }
 
         parent::handleError($code, $message, $file, $line);
@@ -52,7 +55,8 @@ class ErrorStreamErrorHandler extends \yii\web\ErrorHandler
 
     public function handleException($exception)
     {
-        $this->getClient()->reportException($exception);
+        if($this->getClient()->active == true)
+            $this->getClient()->reportException($exception);
         parent::handleException($exception);
     }
 

@@ -15,32 +15,6 @@ class ErrorStreamLogger extends Target
 
     public $clientId = 'errorstream';
 
-    /**
-     *  0 => message
-     *  1 => level
-     *  2 => category
-     *  3 => timestamp
-     */
-    protected function processLogs($logs)
-    {
-        foreach ($logs as $log) {
-            $array = explode("\n", $log[0]);
-            $message = implode('<br>', $array);
-
-
-            $report = new ErrorStreamReport();
-            $report->error_group = $message;
-            $report->line_number = 0;
-            $report->file_name = 'N/A';
-            $report->message = $message;
-            $report->stack_trace = $message;
-            $report->severity =  $this->getSeverity($log);
-
-            
-            $this->getClient()->reportException($report);
-        }
-    }
-
     protected function getSeverity($log){
         $severity = 3;
         $name = Logger::getLevelName($log[1]);
@@ -54,20 +28,23 @@ class ErrorStreamLogger extends Target
 
     public function export()
     {
+        //Stop if we're not active.
+        if($this->getClient()->active !== true) return;
+
         $client = $this->getClient();
         foreach($this->messages as $message) {
 
             list($text, $level, $category, $timestamp) = $message;
 
             $report = new ErrorStreamReport();
-            $report->error_group = $message;
+            $report->error_group = $level . $text;
             $report->line_number = 0;
             $report->file_name = 'N/A';
             $report->message = $text;
             $report->stack_trace = $text;
-            $report->severity =  $this->getSeverity($level);
+            $report->severity = ($level < 4) ? $level : 3; // No higher than 3
 
-            $client->reportException($report);
+            $client->report($report);
         }
     }
 
