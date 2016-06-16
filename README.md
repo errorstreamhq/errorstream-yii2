@@ -1,4 +1,4 @@
-# errorstreamclient
+# ErrorStream - Yii 2.0
 
 Yii2 integration for [Errorstream](https://www.errorstream.com/)
 
