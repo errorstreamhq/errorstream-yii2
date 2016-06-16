@@ -5,7 +5,7 @@
   "homepage": "https://www.errorstream.com",
   "type": "library",
   "require": {
-    "errorstream/errorstreamclient": "1.*",
+    "errorstream/errorstreamclient": "1.*"
   },
   "license": "Apache-2.0",
   "minimum-stability": "dev",
