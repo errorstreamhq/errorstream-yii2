@@ -1,0 +1,17 @@
+{
+  "name": "errorstream/errorstream-yii2",
+  "description": "Yii 2 Package for ErrorStream.com integration",
+  "keywords": ["logging", "errors", "yii", "yii2", "errorstream"],
+  "homepage": "https://www.errorstream.com",
+  "type": "library",
+  "require": {
+    "errorstream/errorstreamclient": "1.*",
+  },
+  "license": "Apache-2.0",
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "ErrorStream\\ErrorStream\\": "src/"
+    }
+  }
+}
